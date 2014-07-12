@@ -1,0 +1,14 @@
+<dbconfig>
+<connection name="STOCK_DB_Pool"> 
+	<type value="Proxool" />
+	<host value="127.0.0.1" />
+	<port value="3306" /> 
+	<user value="root" />
+	<password value="ace" />
+	<db value="stock" />
+	<characterEncoding value="utf8" /> 
+	<minimum-connection-count value="30" />	
+	<maximum-connection-count value="30" />
+	<maximum-connection-lifetime value="3600000" /><!-- second -->
+</connection>
+</dbconfig>

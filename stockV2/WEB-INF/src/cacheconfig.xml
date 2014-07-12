@@ -1,0 +1,38 @@
+<all-config>
+	<config name="SinaExclusiveQuoteCache">
+		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
+		<timeout value="60"/> <!-- second !-->
+		<max_size value="10000"/>
+		<max_memory value="-1"/> <!-- MB !-->
+		<cleanup_rate value="10"/> <!-- % !-->
+		<check_interval value="60"/> <!-- second !-->
+	</config>
+	
+	<config name="SinaExclusiveDealCache">
+		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
+		<timeout value="300"/> <!-- second !-->
+		<max_size value="10000"/>
+		<max_memory value="-1"/> <!-- MB !-->
+		<cleanup_rate value="10"/> <!-- % !-->
+		<check_interval value="60"/> <!-- second !-->
+	</config>
+		
+	<config name="StatCache">
+		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
+		<timeout value="86400"/> <!-- second !-->
+		<max_size value="10000"/>
+		<max_memory value="-1"/> <!-- MB !-->
+		<cleanup_rate value="10"/> <!-- % !-->
+		<check_interval value="600"/> <!-- second !-->
+	</config>
+	
+	<config name="DealDoneCache">
+		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
+		<timeout value="86400"/> <!-- second !-->
+		<max_size value="10000"/>
+		<max_memory value="-1"/> <!-- MB !-->
+		<cleanup_rate value="10"/> <!-- % !-->
+		<check_interval value="600"/> <!-- second !-->
+	</config>
+	
+</all-config>
