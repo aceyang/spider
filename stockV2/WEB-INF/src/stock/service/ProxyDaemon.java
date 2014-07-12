@@ -11,6 +11,7 @@ import stock.db.CommonStorage;
 import vc.pe.jutil.j4log.Logger;
 import com.zgtx.common.client.ProxyItem;
 import com.zgtx.parser.proxy.CNProxyParser;
+import com.zgtx.parser.proxy.CN_ProxyParser;
 import com.zgtx.parser.proxy.Proxy360Parser;
 
 
@@ -165,6 +166,29 @@ public class ProxyDaemon extends java.util.TimerTask {
 				}
 			}
 			*/
+			List<ProxyItem> cnProxyList = CN_ProxyParser.parseProxyList("http://cn-proxy.com/");
+			if (cnProxyList != null)
+			{
+				for (ProxyItem proxy : cnProxyList)
+				{
+					if (proxyHash.get(proxy.getIp() + "@" + proxy.getPort()) != null)
+					{
+						infoLog.info("|Old|" + proxy.getIp() + "|" + proxy.getPort());
+					}
+					else
+					{
+						if (doProxyTest(proxy.getIp(),proxy.getPort(),3))
+						{
+							infoLog.info("|New|" + proxy.getIp() + "|" + proxy.getPort());
+							CommonStorage.addProxy(proxy.getIp(),proxy.getPort(), proxy.getRemark());
+						}
+						else
+						{
+							infoLog.info("|Invalid|" + proxy.getIp() + "|" + proxy.getPort());
+						}
+					}
+				}
+			}
 			List<ProxyItem> proxy360List = Proxy360Parser.parseProxyList("http://www.proxy360.cn/Proxy");
 			if (proxy360List != null)
 			{

@@ -1,19 +1,22 @@
 package stock.service;
 
 import java.util.List;
+import java.util.Timer;
+
+import stock.db.CommonStorage;
 import stock.item.StockItem;
 import vc.pe.jutil.j4log.Logger;
-
-import com.zgtx.common.client.CommonClient;
 import com.zgtx.common.client.Top10StockHolderItem;
 import com.zgtx.parser.sina.Top10StockHolderParser;
 
-public class SpiderDaemon implements Runnable {
+public class SpiderDaemon extends java.util.TimerTask {
 
 	private static final Logger infoLog = Logger.getLogger("SpiderDaemon");
 
+	public static Timer timer = new Timer();
+	
 	static {
-		new Thread(new SpiderDaemon(), "SpiderDaemon").start();
+		timer.schedule(new SpiderDaemon(), 0, 1000 * 3600 * 12);
 	}
 
 	@Override
@@ -21,7 +24,11 @@ public class SpiderDaemon implements Runnable {
 		try {
 			// TODO Auto-generated method stub
 			infoLog.info("---SpiderDaemon---Begin");
-			CommonClient commonClient = new CommonClient();
+			if (!TransactionTimeCheckTask.isVacation) {
+				infoLog.info("---SpiderDaemon---NoVacation---End");
+				return;
+			}
+			
 			List<StockItem> stockList = CommonService.getStockPoolList();
 			for (StockItem stockItem : stockList) {
 				infoLog.info("--Spider--:" + stockItem.getStockId());
@@ -35,7 +42,7 @@ public class SpiderDaemon implements Runnable {
 
 					if (top10StockHolderList != null) {
 						for (Top10StockHolderItem top10StockHolderItem : top10StockHolderList) {
-							commonClient.addTop10StockHolder(top10StockHolderItem);
+							CommonStorage.addTop10StockHolder(top10StockHolderItem);
 						}
 					}
 				}
