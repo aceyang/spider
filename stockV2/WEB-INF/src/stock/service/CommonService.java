@@ -2,6 +2,10 @@ package stock.service;
 
 
 import java.util.*;
+
+import com.zgtx.common.client.ProxyItem;
+
+import stock.db.CommonStorage;
 import stock.db.StockDB;
 import stock.item.StockItem;
 
@@ -9,25 +13,34 @@ public class CommonService {
 
 	private static List<StockItem> StockPoolList = new ArrayList<StockItem>();
 
+	private static List<ProxyItem> ProxyList = new ArrayList<ProxyItem>();
+	
 	private static HashMap<String, String> StockNameHash = new HashMap<String, String>();
 	
 	private static HashMap<String, String> VacationHash = new HashMap<String, String>();
 	
+	private static int ProxySeq = 0;
+	
 	static{
 		reloadStockPool();
+		reloadProxy();
 	}
 	
 	public static  void reloadStockPool() {
-		StockDB stockDB = new StockDB();
-		StockPoolList = stockDB.getStockPoolList();
+		StockPoolList = StockDB.getStockPoolList();
 		for (StockItem stockItem : StockPoolList)
 		{
 			StockNameHash.put(stockItem.getStockId(), stockItem.getStockName());
-		}
-		
+		}	
 	}
 	
+	public static  void reloadProxy() {
+		ProxyList = CommonStorage.getAllProxyList();
+	}
 
+	public static List<ProxyItem> getProxyList() {
+		return ProxyList;
+	}
 	
 	public static List<StockItem> getStockPoolList() {
 		return StockPoolList;
@@ -57,5 +70,26 @@ public class CommonService {
 		}
 		
 		return stockName;
+	}
+	
+	public static ProxyItem getProxy()
+	{
+		
+		if ((ProxyList != null) && (ProxyList.size() > 0))
+		{
+			for(int i = 1; i <= ProxyList.size(); i++)
+			{
+				int index = ProxySeq % ProxyList.size();
+				ProxySeq++;
+				ProxyItem proxyItem = ProxyList.get(index);
+				if (proxyItem.getFailTimes() == 0)
+				{
+					return proxyItem;
+				}
+				
+			}
+		}
+		
+		return null;
 	}
 }

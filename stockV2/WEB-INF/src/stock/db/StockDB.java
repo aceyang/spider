@@ -14,7 +14,7 @@ public class StockDB {
 
 	private static final Logger debugLog = Logger.getLogger("stock_db");
 
-	public List<StockItem> getStockPoolList() {
+	public static List<StockItem> getStockPoolList() {
 		List<StockItem> stockList = new ArrayList<StockItem>();
 		try {
 			String sql = "select * from stock_pool";

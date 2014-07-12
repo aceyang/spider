@@ -7,25 +7,21 @@ import java.util.Timer;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-
+import stock.db.CommonStorage;
 import vc.pe.jutil.j4log.Logger;
-
-import com.zgtx.common.client.CommonClient;
 import com.zgtx.common.client.ProxyItem;
-import com.zgtx.parser.cnproxy.CNProxyParser;
+import com.zgtx.parser.proxy.CNProxyParser;
+import com.zgtx.parser.proxy.Proxy360Parser;
+
 
 public class ProxyDaemon extends java.util.TimerTask {
 
 	public static Timer timer = new Timer();
 
 	private static final Logger infoLog = Logger.getLogger("ProxyDaemon");
-
-	private static List<ProxyItem> NornalProxyList = new ArrayList<ProxyItem>();
 	
 	private static List<String> ProxyUrlList = new ArrayList<String>();
-	
-	private static int ProxySeq = 0;
-	
+		
 	static {
 		ProxyUrlList.add("http://www.cnproxy.com/proxy1.html");
 		ProxyUrlList.add("http://www.cnproxy.com/proxy2.html");
@@ -39,39 +35,11 @@ public class ProxyDaemon extends java.util.TimerTask {
 		ProxyUrlList.add("http://www.cnproxy.com/proxy10.html");
 		ProxyUrlList.add("http://www.cnproxy.com/proxyedu1.html");
 		ProxyUrlList.add("http://www.cnproxy.com/proxyedu2.html");
-		try {
-			CommonClient commonClient = new CommonClient();
-			List<ProxyItem> proxyList = commonClient.getAllProxyList();
-			if (proxyList != null)
-			{
-				for (ProxyItem proxy : proxyList)
-				{
-					if (proxy.getFailTimes() == 0)
-					{
-						NornalProxyList.add(proxy);
-					}
-				}
-			}
-		} catch (Exception e) {
-
-		}
 		
-		timer.schedule(new ProxyDaemon(), 0, 1000 * 3600 * 4);
+		timer.schedule(new ProxyDaemon(), 0, 1000 * 3600 * 12);
 	}
 
-	public static ProxyItem getProxy()
-	{
-		if ((NornalProxyList != null) && (NornalProxyList.size() > 0))
-		{
-			int index = ProxySeq % NornalProxyList.size();
-			ProxySeq++;
-			return NornalProxyList.get(index);
-		}
-		else
-		{
-			return null;
-		}
-	}
+	
 	
 	
 	public static boolean doProxyTest(String proxyHost, int proxyPort) {
@@ -138,8 +106,8 @@ public class ProxyDaemon extends java.util.TimerTask {
 			//检查现有代理是否正常
 			HashMap<String,String> proxyHash = new HashMap<String,String>();
 			List<ProxyItem> newNornalProxyList = new ArrayList<ProxyItem>();
-			CommonClient commonClient = new CommonClient();
-			List<ProxyItem> proxyList = commonClient.getAllProxyList();
+		
+			List<ProxyItem> proxyList = CommonService.getProxyList();
 			if (proxyList != null)
 			{
 				for (ProxyItem proxy : proxyList)
@@ -148,7 +116,7 @@ public class ProxyDaemon extends java.util.TimerTask {
 					{
 						proxyHash.put(proxy.getIp() + "@" + proxy.getPort(), "");
 						newNornalProxyList.add(proxy);
-						commonClient.updateProxyFailTimes(proxy.getIp(),proxy.getPort(), 0);
+						CommonStorage.updateProxyFailTimes(proxy.getIp(),proxy.getPort(), 0);
 						infoLog.info("|OK|" + proxy.getIp() + "|" + proxy.getPort());
 					}
 					else
@@ -156,20 +124,20 @@ public class ProxyDaemon extends java.util.TimerTask {
 						if (proxy.getFailTimes() >= 10)
 						{
 							infoLog.info("|Delete|" + proxy.getIp() + "|" + proxy.getPort());
-							commonClient.delProxy(proxy.getIp(),proxy.getPort());
+							CommonStorage.delProxy(proxy.getIp(),proxy.getPort());
 						}
 						else
 						{
 							proxyHash.put(proxy.getIp() + "@" + proxy.getPort(), "");
 							infoLog.info("|Fail|" + proxy.getIp() + "|" + proxy.getPort());
-							commonClient.updateProxyFailTimes(proxy.getIp(),proxy.getPort(), proxy.getFailTimes() + 1);
+							CommonStorage.updateProxyFailTimes(proxy.getIp(),proxy.getPort(), proxy.getFailTimes() + 1);
 						}
 					}
 				}
 			}
 			
-			NornalProxyList = newNornalProxyList;
 			//获取新增代理
+			/*
 			for (String url : ProxyUrlList)
 			{
 				List<ProxyItem> newProxyList = CNProxyParser.parseProxyList(url);
@@ -186,7 +154,7 @@ public class ProxyDaemon extends java.util.TimerTask {
 							if (doProxyTest(proxy.getIp(),proxy.getPort(),3))
 							{
 								infoLog.info("|New|" + proxy.getIp() + "|" + proxy.getPort());
-								commonClient.addProxy(proxy.getIp(),proxy.getPort(), proxy.getRemark());
+								CommonStorage.addProxy(proxy.getIp(),proxy.getPort(), proxy.getRemark());
 							}
 							else
 							{
@@ -196,7 +164,31 @@ public class ProxyDaemon extends java.util.TimerTask {
 					}
 				}
 			}
-			
+			*/
+			List<ProxyItem> proxy360List = Proxy360Parser.parseProxyList("http://www.proxy360.cn/Proxy");
+			if (proxy360List != null)
+			{
+				for (ProxyItem proxy : proxy360List)
+				{
+					if (proxyHash.get(proxy.getIp() + "@" + proxy.getPort()) != null)
+					{
+						infoLog.info("|Old|" + proxy.getIp() + "|" + proxy.getPort());
+					}
+					else
+					{
+						if (doProxyTest(proxy.getIp(),proxy.getPort(),3))
+						{
+							infoLog.info("|New|" + proxy.getIp() + "|" + proxy.getPort());
+							CommonStorage.addProxy(proxy.getIp(),proxy.getPort(), proxy.getRemark());
+						}
+						else
+						{
+							infoLog.info("|Invalid|" + proxy.getIp() + "|" + proxy.getPort());
+						}
+					}
+				}
+			}
+			CommonService.reloadProxy();
 			infoLog.info("---ProxyDaemon---End");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
