@@ -18,7 +18,7 @@ public class SinaQuoteDaemon extends Thread{
 
 	private static final Logger debugLog = Logger.getLogger("SinaQuoteDaemon");
 
-	private static final int SpiderNum = 8;
+	private static final int SpiderNum = 10;
 	
 	private static final int BatchNum = 160;
 	

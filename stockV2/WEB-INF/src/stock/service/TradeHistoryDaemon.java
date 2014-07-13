@@ -3,11 +3,9 @@ package stock.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
-
 import com.zgtx.parser.sina.FinanceInfoParser;
 import com.zgtx.parser.sina.TradeHistory;
 import com.zgtx.parser.sina.TradeHistoryParser;
-
 import stock.db.StockDB;
 import stock.item.StockItem;
 import stock.item.TradeHistoryStat;
@@ -34,7 +32,7 @@ public class TradeHistoryDaemon extends java.util.TimerTask{
 		try {
 			// TODO Auto-generated method stub
 			infoLog.info("---TradeHistoryDaemon---Begin");
-			/*
+			
 			if (TransactionTimeCheckTask.isVacation)
 			{
 				infoLog.info("---TradeHistoryDaemon---Vacation---End");
@@ -45,10 +43,10 @@ public class TradeHistoryDaemon extends java.util.TimerTask{
 				infoLog.info("---TradeHistoryDaemon---NoTransactionEnd---End");
 				return;
 			}
-			*/
+			
 			
 			List<StockItem> stockList = CommonService.getStockPoolList();
-			/*
+		
 			for (StockItem stockItem : stockList) {
 				if (StockDB.isStockTradeHistoryExisted(stockItem.getStockId(), TransactionTimeCheckTask.TodayDate))
 				{
@@ -64,7 +62,7 @@ public class TradeHistoryDaemon extends java.util.TimerTask{
 					}
 				}
 			}
-			*/
+			
 			//统计
 			for (StockItem stockItem : stockList) {
 				infoLog.info("--TradeHistoryStat--:" + stockItem.getStockId());
@@ -157,7 +155,7 @@ public class TradeHistoryDaemon extends java.util.TimerTask{
 				for (TradeHistoryStat tradeHistoryStat : tradeHistoryStatList)
 				{
 					if ((tradeHistoryStat.getAverageDealVolume5() / tradeHistoryStat.getAverageDealVolume60() > 2)
-						&& (tradeHistoryStat.getDate().compareTo("2014-06") > 0))
+						&& (tradeHistoryStat.getDate().compareTo("2014-07") > 0))
 					{
 						infoLog.info("|Hit|" + tradeHistoryStat.getStockId() + "|" + tradeHistoryStat.getDate() + "|" + tradeHistoryStat.getAverageDealVolume5() + "|" + tradeHistoryStat.getAverageDealVolume60());
 					}

@@ -23,8 +23,6 @@ public class SinaStatTaskDispatcher extends java.util.TimerTask{
 	
 	private static HashMap<String, String> ExclusiveHash = new HashMap<String, String>();
 
-	static{
-	}
 	
 	private static void addSinaStatTask(String stockId,String date,int month)
 	{
@@ -47,7 +45,7 @@ public class SinaStatTaskDispatcher extends java.util.TimerTask{
 		}
 		
 		String date = sdf.format(cal.getTime());
-		while (date.compareTo("2014-02-24") >= 0)
+		while (date.compareTo("2014-07-14") >= 0)
 		{
 			int index = cal.get(Calendar.DAY_OF_WEEK);
 			if ((index != Calendar.SATURDAY) && (index != Calendar.SUNDAY)) {
