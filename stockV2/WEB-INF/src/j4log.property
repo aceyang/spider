@@ -21,4 +21,5 @@ ProxyDaemon = INFO, /data/logs/stockV2/ProxyDaemon.log
 common_client_access = INFO, /data/logs/stockV2/common_client_access.log
 common_storage_sql = INFO, /data/logs/stockV2/common_storage_sql.log
 common_storage_error = DEBUG, /data/logs/stockV2/common_storage_error.log
-
+stock_sql = INFO, /data/logs/stockV2/stock_sql.log
+TradeHistoryDaemon = INFO, /data/logs/stockV2/TradeHistoryDaemon.log

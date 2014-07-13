@@ -2,6 +2,9 @@ package stock.db;
 
 import java.util.*;
 import javax.sql.rowset.CachedRowSet;
+
+import com.zgtx.parser.sina.TradeHistory;
+
 import stock.item.StockItem;
 import vc.pe.jutil.j4log.Logger;
 import vc.pe.jutil.sql.DBEngine;
@@ -12,6 +15,8 @@ public class StockDB {
 
 	private static DBEngine dbengine = DBFactory.getDBEngine("STOCK_DB_Pool");
 
+	private static final Logger sqlLog = Logger.getLogger("stock_sql");
+	
 	private static final Logger debugLog = Logger.getLogger("stock_db");
 
 	public static List<StockItem> getStockPoolList() {
@@ -66,5 +71,28 @@ public class StockDB {
 		}
 
 		return true;
+	}
+	
+	public static int addTradeHistory(TradeHistory tradeHistory){
+		int ret = 0;
+		String tableName = "data_sina_v3.trade_history_" + (Integer.valueOf(tradeHistory.getStockId()) % 100);
+		try {
+			String sql = "insert into " + tableName + " set stockId = '" + StringUtil.encodeSQL(tradeHistory.getStockId())
+					+ "',date = '" + StringUtil.encodeSQL(tradeHistory.getDate()) 
+					+ "',openPrice = '" + tradeHistory.getOpenPrice()
+					+ "',closePrice = '" + tradeHistory.getClosePrice()
+					+ "',highPrice = '" + tradeHistory.getHighPrice()
+					+ "',lowPrice = '" + tradeHistory.getLowPrice()
+					+ "',tradingVolume = '" + tradeHistory.getTradingVolume()
+					+ "',dealVolume = '" + tradeHistory.getDealVolume()
+					+ "';";
+					
+			sqlLog.info(sql);
+			dbengine.executeUpdate(sql);
+		} catch (Exception e) {
+			ret = -1000;
+		}
+		
+		return ret;
 	}
 }

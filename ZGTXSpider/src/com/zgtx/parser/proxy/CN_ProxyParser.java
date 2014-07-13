@@ -55,8 +55,7 @@ public class CN_ProxyParser {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-		
-		
+			
 		return proxyList;
 	}
 
