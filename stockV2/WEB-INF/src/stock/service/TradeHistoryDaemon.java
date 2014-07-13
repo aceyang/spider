@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 
+import com.zgtx.parser.sina.FinanceInfoParser;
 import com.zgtx.parser.sina.TradeHistory;
 import com.zgtx.parser.sina.TradeHistoryParser;
 
@@ -11,6 +12,7 @@ import stock.db.StockDB;
 import stock.item.StockItem;
 import stock.item.TradeHistoryStat;
 import vc.pe.jutil.j4log.Logger;
+import vc.pe.jutil.util.Pair;
 
 
 public class TradeHistoryDaemon extends java.util.TimerTask{
@@ -145,10 +147,17 @@ public class TradeHistoryDaemon extends java.util.TimerTask{
 					tradeHistoryStatList.add(tradeHistoryStat);
 				}
 				
+				Pair<Long,Long> financeInfo =  FinanceInfoParser.queryFinanceInfo(stockItem.getStockId());
+				infoLog.info("|FinanceInfo|" + financeInfo.first + "|" + financeInfo.second);
+				if ((financeInfo.first < 0) && (financeInfo.second < 0))
+				{
+					continue;
+				}
+				
 				for (TradeHistoryStat tradeHistoryStat : tradeHistoryStatList)
 				{
 					if ((tradeHistoryStat.getAverageDealVolume5() / tradeHistoryStat.getAverageDealVolume60() > 2)
-						&& (tradeHistoryStat.getDate().compareTo("2014") > 0))
+						&& (tradeHistoryStat.getDate().compareTo("2014-06") > 0))
 					{
 						infoLog.info("|Hit|" + tradeHistoryStat.getStockId() + "|" + tradeHistoryStat.getDate() + "|" + tradeHistoryStat.getAverageDealVolume5() + "|" + tradeHistoryStat.getAverageDealVolume60());
 					}
