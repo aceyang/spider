@@ -42,6 +42,29 @@ public class StockDB {
 	}
 	
 
+	public static List<StockItem> getCNStockPoolList() {
+		List<StockItem> stockList = new ArrayList<StockItem>();
+		try {
+			String sql = "select * from stock_pool_cn_a";
+
+			CachedRowSet rs = dbengine.executeQuery(sql);
+			while (rs.next()) {
+				String stockId = rs.getString("stockId");
+				String stockName = rs.getString("stockName");
+
+				StockItem stockItem = new StockItem();
+				stockItem.setStockName(stockName);
+				stockItem.setStockId(stockId);
+
+				stockList.add(stockItem);
+			}
+		} catch (Exception e) {
+			debugLog.error("error in StockDB::getCNStockPoolList()", e);
+		}
+
+		return stockList;
+	}
+	
 	
 	
 	public static boolean isSinaQuoteStatDone(int month,String stockId, String date) {

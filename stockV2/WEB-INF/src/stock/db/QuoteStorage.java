@@ -204,4 +204,68 @@ public class QuoteStorage {
 
 		return quoteVaryList;
 	}
+	
+	
+	private static String getQQQuoteTable(int month, int day) {
+		String tableName = "data_qq_" + month + ".quote_" + day;
+		
+		return tableName;
+	}
+	
+	public static boolean insertQQQuoteBatch(int month, int day,List<QuoteItem> quoteList) {
+
+		String tableName = getQQQuoteTable(month,day);
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert into "
+				+ tableName
+				+ " (bid1Amount,bid1Price,"
+				+ "bid2Amount,bid2Price,bid3Amount,bid3Price,bid4Amount,bid4Price,bid5Amount,bid5Price,"
+				+ "sell1Amount,sell1Price,sell2Amount,sell2Price,sell3Amount,sell3Price,sell4Amount,sell4Price,"
+				+ "sell5Amount,sell5Price,stockId,date,time) values ");
+		
+	
+		int index = 0;
+		for (QuoteItem quoteItem : quoteList)
+		{
+			index++;
+			sb.append("('" + quoteItem.getBid1Amount() + "','"
+					+ quoteItem.getBid1Price() + "','" + quoteItem.getBid2Amount()
+					+ "','" + quoteItem.getBid2Price() + "','"
+					+ quoteItem.getBid3Amount() + "','" + quoteItem.getBid3Price()
+					+ "','" + quoteItem.getBid4Amount() + "','"
+					+ quoteItem.getBid4Price() + "','" + quoteItem.getBid5Amount()
+					+ "','" + quoteItem.getBid5Price() + "','"
+					+ quoteItem.getSell1Amount() + "','"
+					+ quoteItem.getSell1Price() + "','"
+					+ quoteItem.getSell2Amount() + "','"
+					+ quoteItem.getSell2Price() + "','"
+					+ quoteItem.getSell3Amount() + "','"
+					+ quoteItem.getSell3Price() + "','"
+					+ quoteItem.getSell4Amount() + "','"
+					+ quoteItem.getSell4Price() + "','"
+					+ quoteItem.getSell5Amount() + "','"
+					+ quoteItem.getSell5Price() + "','" 
+					+ quoteItem.getStockId() + "','" 
+					+ quoteItem.getDate() + "','" + quoteItem.getTime() + "')");
+			if (index == quoteList.size())
+			{
+				sb.append(";");
+			}
+			else
+			{
+				sb.append(",");
+			}
+		}
+		
+		try {
+			dbengine.executeUpdate(sb.toString());
+		} catch (Exception e) {
+			debugLog.debug("error in QuoteStorage::insertQQQuoteBatch() ", e);
+			return false;
+		}
+
+		return true;
+	}
+	
 }

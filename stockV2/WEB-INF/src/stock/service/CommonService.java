@@ -12,6 +12,8 @@ import stock.item.StockItem;
 public class CommonService {
 
 	private static List<StockItem> StockPoolList = new ArrayList<StockItem>();
+	
+	private static List<StockItem> CNStockPoolList = new ArrayList<StockItem>();
 
 	private static List<ProxyItem> ProxyList = new ArrayList<ProxyItem>();
 	
@@ -32,6 +34,11 @@ public class CommonService {
 		{
 			StockNameHash.put(stockItem.getStockId(), stockItem.getStockName());
 		}	
+		CNStockPoolList = StockDB.getCNStockPoolList();
+		for (StockItem stockItem : CNStockPoolList)
+		{
+			StockNameHash.put(stockItem.getStockId(), stockItem.getStockName());
+		}
 	}
 	
 	public static  void reloadProxy() {
@@ -46,6 +53,10 @@ public class CommonService {
 		return StockPoolList;
 	}
 
+	public static List<StockItem> getCNStockPoolList() {
+		return CNStockPoolList;
+	}
+	
 	public static boolean isVacation(String date) {
 		// 判断是否为其它假日
 		if (VacationHash == null) {

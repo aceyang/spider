@@ -28,7 +28,7 @@ public class SinaSpider {
 		HttpConnectionManagerParams httpConnectionManagerParams = new HttpConnectionManagerParams();
 		httpConnectionManagerParams.setDefaultMaxConnectionsPerHost(32);
 		httpConnectionManagerParams.setMaxTotalConnections(128);
-		httpConnectionManagerParams.setConnectionTimeout(1000);
+		httpConnectionManagerParams.setConnectionTimeout(100);
 		connectionManager.setParams(httpConnectionManagerParams);
 		httpClient = new HttpClient(connectionManager);
 	}
@@ -57,7 +57,7 @@ public class SinaSpider {
 
 		// 设置超时
 		HttpMethodParams httparams = new HttpMethodParams();
-		httparams.setSoTimeout(1000);
+		httparams.setSoTimeout(100);
 		method.setParams(httparams);
 		String content = "";
 		try {

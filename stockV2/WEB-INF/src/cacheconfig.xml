@@ -1,4 +1,22 @@
 <all-config>
+    <config name="TencentExclusiveQuoteCache">
+		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
+		<timeout value="300"/> <!-- second !-->
+		<max_size value="100000"/>
+		<max_memory value="-1"/> <!-- MB !-->
+		<cleanup_rate value="10"/> <!-- % !-->
+		<check_interval value="60"/> <!-- second !-->
+	</config>
+	
+	<config name="TencentExclusiveDealCache">
+		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
+		<timeout value="300"/> <!-- second !-->
+		<max_size value="100000"/>
+		<max_memory value="-1"/> <!-- MB !-->
+		<cleanup_rate value="10"/> <!-- % !-->
+		<check_interval value="60"/> <!-- second !-->
+	</config>
+	
 	<config name="SinaExclusiveQuoteCache">
 		<cleanup_strategy value="create_time"/> <!-- support values: last_access_time create_time !-->
 		<timeout value="60"/> <!-- second !-->

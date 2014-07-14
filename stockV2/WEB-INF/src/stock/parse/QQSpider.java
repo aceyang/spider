@@ -1,6 +1,5 @@
 package stock.parse;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -9,6 +8,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import stock.item.*;
+import stock.service.TransactionTimeCheckTask;
 import stock.stat.QuoteCollection;
 import vc.pe.jutil.j4log.Logger;
 
@@ -23,6 +23,7 @@ public class QQSpider {
 		HttpConnectionManagerParams httpConnectionManagerParams = new HttpConnectionManagerParams();
 		httpConnectionManagerParams.setDefaultMaxConnectionsPerHost(32);
 		httpConnectionManagerParams.setMaxTotalConnections(128);
+		httpConnectionManagerParams.setConnectionTimeout(100);
 		connectionManager.setParams(httpConnectionManagerParams);
 		httpClient = new HttpClient(connectionManager);
 	}
@@ -31,21 +32,23 @@ public class QQSpider {
 		QQData qqData = new QQData();
 		String content = "";
 		stockId = stockId.toLowerCase();
-		String prefix = "";
+		String id = "";
 		if (stockId.startsWith("0")) {
-			prefix = "sz";
+			id = "sz" + stockId;
 		} else if (stockId.startsWith("6")) {
-			prefix = "sh";
+			id = "sh" + stockId;
+		}else{
+			id = "sz" + stockId;
 		}
-
-		String url = "http://qt.gtimg.cn/q=" + prefix + stockId;
+		
+		String url = "http://qt.gtimg.cn/q=" + id;
 		// 使用GET方法,如果服务器需要通过HTTPS连接,那只需要将下面URL中的http换成https.
 		HttpMethod method = new GetMethod(url);
 		method.addRequestHeader("User-Agent", ua);
 
 		// 设置超时
 		HttpMethodParams httparams = new HttpMethodParams();
-		httparams.setSoTimeout(2000);
+		httparams.setSoTimeout(100);
 		method.setParams(httparams);
 
 		try {
@@ -94,12 +97,7 @@ public class QQSpider {
 			String date = year + "-" + month + "-" + day;
 			String time = hour + ":" + min + ":" + second;
 
-			// 判断是否为当天
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			Calendar cal = Calendar.getInstance();
-			String curDate = sdf.format(cal.getTime());
-
-			if (!date.equals(curDate)) {
+			if (!date.equals(TransactionTimeCheckTask.TodayDate)) {
 				return null;
 			}
 
@@ -156,7 +154,7 @@ public class QQSpider {
 	}
 
 	public static void main(String[] args) {
-		QQData date = QQSpider.query("600824", "");
+		QQData date = QQSpider.query("000829", "");
 		if (date != null) {
 			System.out.println(date.getQuoteItem().toString());
 			List<DealItem> dellList = date.getDellList();

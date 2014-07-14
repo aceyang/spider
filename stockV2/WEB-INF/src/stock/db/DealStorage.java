@@ -216,4 +216,44 @@ public class DealStorage {
 		return dealList;
 	}
 	
+	private static String getQQDealTable(int month, int day) {
+		String tableName = "data_qq_" + month + ".deal_" + day;
+		
+		return tableName;
+	}
+	
+	public static boolean insertQQDealBatch(int month, int day,List<DealItem> dealList) {
+
+		String tableName = getQQDealTable(month,day);
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert into " + tableName + "(stockId,date,time,price,quantum) values ");
+		
+		int index = 0;
+		for (DealItem dealItem : dealList)
+		{
+			index++;
+			sb.append("('" + dealItem.getStockId() + "','" + dealItem.getDate() + "','" + dealItem.getTime() + "','" + dealItem.getPrice() + "','" + dealItem.getQuantum() + "')");
+			
+			if (index == dealList.size())
+			{
+				sb.append(";");
+			}
+			else
+			{
+				sb.append(",");
+			}
+		}
+		
+		try {
+			dbengine.executeUpdate(sb.toString());
+		} catch (Exception e) {
+
+			debugLog.debug("error in DealStorage::insertQQDealBatch()", e);
+
+			return false;
+		}
+
+		return true;
+	}
+	
 }
